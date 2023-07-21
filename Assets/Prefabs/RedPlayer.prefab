@@ -125,7 +125,7 @@ Transform:
   - {fileID: 4244598078620872311}
   - {fileID: 2814640126788535263}
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &8618099285507868989
 Rigidbody:
@@ -276,6 +276,10 @@ MonoBehaviour:
   ballTrigger: {fileID: 1438191486815287905}
   handsPosition: {fileID: 4244598078620872311}
   ball: {fileID: 0}
+  throwForce: 1000
+  throwAngle: 45
+  kickForce: 2000
+  kickAngle: 30
   isCatched: 0
   activePlayer: {fileID: 0}
 --- !u!1001 &2343320091241210932

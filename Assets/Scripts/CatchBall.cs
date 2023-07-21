@@ -5,18 +5,22 @@ public class CatchBall : MonoBehaviour
     [SerializeField] private GameObject ballTrigger;
     [SerializeField] private Transform handsPosition;
     [SerializeField] private GameObject ball;
+    [SerializeField] private float throwForce;
+    [SerializeField] private float throwAngle;
+    [SerializeField] private float kickForce;
+    [SerializeField] private float kickAngle;
     public bool isCatched = false;
 
     //[SyncVar(hook = nameof(OnIsCatchedChanged))] public bool isCatched = false;
 	
 	public GameObject activePlayer;
     private Animator animator;
-
-
+    private Rigidbody ballRigidbody;
     private void Start()
     {
         ball = GameObject.FindGameObjectWithTag("Ball");
         animator= GetComponent<Animator>();
+        ballRigidbody = ball.GetComponent<Rigidbody>();
     }
 
     private void Update()
@@ -26,9 +30,17 @@ public class CatchBall : MonoBehaviour
             ball.transform.position = handsPosition.position;
 			activePlayer = gameObject;
         }
+        // if (Input.GetKeyDown(KeyCode.E) && isCatched)
+        // {
+        //     ThrowBall();
+        // }
         if (Input.GetKeyDown(KeyCode.E) && isCatched)
         {
-            CmdThrowBall();
+            ThrowBall();
+        }
+        else if(Input.GetKeyDown(KeyCode.Q) && isCatched)
+        {
+            KickBall();
         }
     }
 
@@ -41,57 +53,57 @@ public class CatchBall : MonoBehaviour
         }
     }
 
-    private void CmdThrowBall()
+    private void ThrowBall()
     {
-        Debug.Log("Throwing ball");
         isCatched = false;
-        ball.GetComponent<Rigidbody>().isKinematic = false;
+        
 
-        float currentPower = 25;
-        float arcHeight = 10;
-
-        Quaternion throwRotation = Quaternion.LookRotation(transform.forward, transform.up);
-        transform.rotation = throwRotation * Quaternion.Euler(-55, 0f, 0f);
-        Vector3 throwDirection = transform.forward;
-        Vector3 throwForce = throwDirection * currentPower;
-        ball.GetComponent<Rigidbody>().AddForce(throwForce, ForceMode.Impulse);
-		activePlayer = null;
-
-        RpcResetBallPosition();
-
+        // Применение фиксированной силы и угла броска к мячу
+        Vector3 throwDirection = Quaternion.Euler(-throwAngle, transform.eulerAngles.y, 0f) * Vector3.forward;
+        ballRigidbody.AddForce(throwDirection * throwForce);
     }
-
-    private void OnIsCatchedChanged(bool oldValue, bool newValue)
+    private void KickBall()
     {
-        if (newValue)
-        {
-            RpcUpdateBallPosition(handsPosition.position);
-        }
-        else
-        {
-            RpcResetBallPosition();
-        }
+        isCatched = false;
+        
+
+        // Применение фиксированной силы и угла броска к мячу
+        Vector3 throwDirection = Quaternion.Euler(-kickAngle, transform.eulerAngles.y, 0f) * Vector3.forward;
+        ballRigidbody.AddForce(throwDirection * kickForce);
     }
+
+
+    // private void OnIsCatchedChanged(bool oldValue, bool newValue)
+    // {
+    //     if (newValue)
+    //     {
+    //         RpcUpdateBallPosition(handsPosition.position);
+    //     }
+    //     else
+    //     {
+    //         RpcResetBallPosition();
+    //     }
+    // }
 
     //[ClientRpc]
-    private void RpcUpdateBallPosition(Vector3 position)
-    {
-        // if (isLocalPlayer)
-        // {
-        //     ball.transform.position = position;
-        // }
-        ball.transform.position = position;
-    }
+    // private void RpcUpdateBallPosition(Vector3 position)
+    // {
+    //     // if (isLocalPlayer)
+    //     // {
+    //     //     ball.transform.position = position;
+    //     // }
+    //     ball.transform.position = position;
+    // }
 
     //[ClientRpc]
-    private void RpcResetBallPosition()
-    {
-        // if (isLocalPlayer)
-        // {
-        //     ball.transform.position = Vector3.zero;
-        // }
-        ball.transform.position = Vector3.zero;
-    }
+    // private void RpcResetBallPosition()
+    // {
+    //     // if (isLocalPlayer)
+    //     // {
+    //     //     ball.transform.position = Vector3.zero;
+    //     // }
+    //     ball.transform.position = Vector3.zero;
+    // }
     private void OnCollisionEnter(Collision col)
     {
         if (col.gameObject.tag == "BluePlayer" && gameObject.tag == "RedPlayer")
