@@ -9,6 +9,7 @@ public class CatchBall : MonoBehaviour
     [SerializeField] private float throwAngle;
     [SerializeField] private float kickForce;
     [SerializeField] private float kickAngle;
+    [SerializeField] private bool isRed;
     public bool isCatched = false;
 
     //[SyncVar(hook = nameof(OnIsCatchedChanged))] public bool isCatched = false;
@@ -16,6 +17,7 @@ public class CatchBall : MonoBehaviour
 	public GameObject activePlayer;
     private Animator animator;
     private Rigidbody ballRigidbody;
+    private float previousRotationAngle;
     private void Start()
     {
         ball = GameObject.FindGameObjectWithTag("Ball");
@@ -25,20 +27,44 @@ public class CatchBall : MonoBehaviour
 
     private void Update()
     {
+        float currentRotationAngle = transform.eulerAngles.y;
+
+        if(isRed)
+        {
+            if (currentRotationAngle >= 205f && currentRotationAngle <= 325f)
+            {
+                if (Input.GetKeyDown(KeyCode.E) && isCatched)
+                {
+                    Debug.Log("Вперёд бросать нельзя");
+                    return;
+                }
+            }
+        }
+        else if(!isRed)
+        {
+            if (currentRotationAngle >= 35f && currentRotationAngle <= 155f)
+            {
+                if (Input.GetKeyDown(KeyCode.E) && isCatched)
+                {
+                    Debug.Log("Вперёд бросать нельзя");
+                    return;
+                }
+            }
+        }
+
+        previousRotationAngle = currentRotationAngle;
+
         if (isCatched)
         {
             ball.transform.position = handsPosition.position;
-			activePlayer = gameObject;
+            activePlayer = gameObject;
         }
-        // if (Input.GetKeyDown(KeyCode.E) && isCatched)
-        // {
-        //     ThrowBall();
-        // }
+
         if (Input.GetKeyDown(KeyCode.E) && isCatched)
         {
             ThrowBall();
         }
-        else if(Input.GetKeyDown(KeyCode.Q) && isCatched)
+        else if (Input.GetKeyDown(KeyCode.Q) && isCatched)
         {
             KickBall();
         }

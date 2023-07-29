@@ -280,6 +280,7 @@ MonoBehaviour:
   throwAngle: 45
   kickForce: 2000
   kickAngle: 30
+  isRed: 1
   isCatched: 0
   activePlayer: {fileID: 0}
 --- !u!1001 &2343320091241210932
