@@ -102,6 +102,7 @@ GameObject:
   - component: {fileID: -5275354069992217588}
   - component: {fileID: 4060477141471863511}
   - component: {fileID: -3745799117530110128}
+  - component: {fileID: 7214283644986816927}
   m_Layer: 0
   m_Name: BluePlayer
   m_TagString: BluePlayer
@@ -276,8 +277,29 @@ MonoBehaviour:
   ballTrigger: {fileID: 1438191486815287905}
   handsPosition: {fileID: 4244598078620872311}
   ball: {fileID: 0}
+  throwForce: 0
+  throwAngle: 0
+  kickForce: 0
+  kickAngle: 0
+  isRed: 0
   isCatched: 0
   activePlayer: {fileID: 0}
+--- !u!114 &7214283644986816927
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2918110095531199675}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2891fde971597644a8f7e1615aca554, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
+  force: 0
+  direction: 0
+  verticalAngle: 0
 --- !u!1001 &4551407498391572558
 PrefabInstance:
   m_ObjectHideFlags: 0

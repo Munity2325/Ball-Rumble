@@ -102,6 +102,7 @@ GameObject:
   - component: {fileID: 3467333471007253574}
   - component: {fileID: 1598705052104406835}
   - component: {fileID: 2695921691524504914}
+  - component: {fileID: -7786606012278797129}
   m_Layer: 0
   m_Name: RedPlayer
   m_TagString: RedPlayer
@@ -283,6 +284,22 @@ MonoBehaviour:
   isRed: 1
   isCatched: 0
   activePlayer: {fileID: 0}
+--- !u!114 &-7786606012278797129
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2918110095531199675}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2891fde971597644a8f7e1615aca554, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
+  force: 0
+  direction: 0
+  verticalAngle: 0
 --- !u!1001 &2343320091241210932
 PrefabInstance:
   m_ObjectHideFlags: 0
