@@ -18,7 +18,8 @@ public class TournamentController : MonoBehaviour {
         if (updatesCount % updatesPerRequest != 0) return;
         updatesCount = 0;
         foreach(TournamentPlayer player in teams) {
-            player.request();
+            // TODO: Собрать все данные об объектах на поле и отправить запрос игроку
+            player.requestActions(/* данные */);
         }
 
     }
