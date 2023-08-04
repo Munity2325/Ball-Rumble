@@ -23,7 +23,6 @@ public class PlayerMovement : MonoBehaviour
     private bool canHeal;
     
     private float ySpeed;
-    private float originalStepOffset;
     private float timeSinceSprint;
 
     private CharacterController characterController;
@@ -35,8 +34,6 @@ public class PlayerMovement : MonoBehaviour
     {
         characterController = GetComponent<CharacterController>();
         animator= GetComponent<Animator>();
-
-        originalStepOffset = characterController.stepOffset;
         ball = GameObject.FindGameObjectWithTag("Ball");
         gameManager = GameObject.FindGameObjectWithTag("GameManager");
     }
@@ -57,17 +54,12 @@ public class PlayerMovement : MonoBehaviour
 
         if (characterController.isGrounded)
         {
-            characterController.stepOffset = originalStepOffset;
             ySpeed = -0.5f;
 
             if (Input.GetButtonDown("Jump"))
             {
                 ySpeed = jumpSpeed;
             }
-        }
-        else
-        {
-            characterController.stepOffset = 0;
         }
 
         Vector3 velocity = movementDirection * magnitude;
