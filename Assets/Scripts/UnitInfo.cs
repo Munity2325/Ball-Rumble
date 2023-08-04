@@ -27,4 +27,14 @@ public class UnitInfo {
 [Serializable]
 public class UnitInfoCollection {
     public UnitInfo[] data;
+
+    public UnitInfoCollection(uint size) {
+        data = new UnitInfo[size];
+    }
+
+    public void refresh() {
+        foreach (UnitInfo unit in data) {
+            unit.refresh();
+        }
+    }
 }
