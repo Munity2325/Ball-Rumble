@@ -14,6 +14,7 @@ TagManager:
   - GameManager
   - SpawnRedPlayer
   - NamesManager
+  - GoalPost
   layers:
   - Default
   - TransparentFX
