@@ -12,9 +12,9 @@ public class TournamentPlayer {
         this.player = player;
         this.client = new UdpClient(player.host, player.port);
     }
-    public void requestActions(UnitInfo[] units) {
+    public void requestActions(UnitInfoCollection units) {
         string data = JsonUtility.ToJson(units);
-        Debug.Log("requestActions(" + data + ")");
+        //Debug.Log("requestActions(" + data + ")");
         client.sendRequest(UdpClient.Requests.ACTIONS, data, onActionsReceived);
     }
 

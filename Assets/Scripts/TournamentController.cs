@@ -5,11 +5,11 @@ using UnityEngine;
 
 public class TournamentController : MonoBehaviour {
     [SerializeField] private uint totalTeams = 2;
-    [SerializeField] private uint unitsInTeam = 6;
+    [SerializeField] private uint unitsInTeam = 1; // 6 в финальной версии
     [SerializeField] private uint updatesPerRequest = 3;
     private uint updatesCount = 0;
     private TournamentPlayer[] teams = null;
-    private UnitInfo[] objectsInfo = null;
+    private UnitInfoCollection objectsInfo = new();
 
     void Awake() {
         teams = new TournamentPlayer[totalTeams];
@@ -24,29 +24,36 @@ public class TournamentController : MonoBehaviour {
         updatesCount++;
         if (updatesCount % updatesPerRequest != 0) return;
         updatesCount = 0;
+        refreshObjectsInfo();
         foreach(TournamentPlayer player in teams) {
             player.requestActions(objectsInfo);
         }
+    }
 
+    private void refreshObjectsInfo() {
+        foreach(UnitInfo unit in objectsInfo.data) {
+            unit.refresh();
+        }
     }
 
     private void createObjectsInfo() {
         // Длина массива objectsInfo: количество юнитов в каждой команде + мяч + 4 штанги ворот
-        objectsInfo = new UnitInfo[totalTeams * unitsInTeam + 1 + 4];
+        objectsInfo.data = new UnitInfo[totalTeams * unitsInTeam + 1 + 4];
+        Debug.Log(objectsInfo.data.Length);
         // Добавляем мяч
-        objectsInfo[0] = new UnitInfo(GameObject.FindWithTag("Ball"));
+        objectsInfo.data[0] = new UnitInfo(GameObject.FindWithTag("Ball"));
         uint i = 1;
         // Добавляем штанги
         GameObject[] objects = GameObject.FindGameObjectsWithTag("GoalPost");
         foreach (GameObject obj in objects) {
-            objectsInfo[i] = new UnitInfo(obj);
+            objectsInfo.data[i] = new UnitInfo(obj);
             i++;
         }
         // Добавляем юниты команд
         for (uint t=0; t<totalTeams; t++) {
             objects = GameObject.FindGameObjectsWithTag(teams[t].playerName());
             foreach(GameObject obj in objects) {
-                objectsInfo[i] = new UnitInfo(obj);
+                objectsInfo.data[i] = new UnitInfo(obj);
                 i++;
             }
         }
