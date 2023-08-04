@@ -3,94 +3,95 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-
-
     [SerializeField] private float movementSpeed;
     [SerializeField] private float rotationSpeed;
-    [SerializeField] private float jumpSpeed;
+    [SerializeField] private float jumpForce;
     [SerializeField] private float sprintSpeed;
     [SerializeField] private float walkSpeed;
     [SerializeField] private float staminaMax;
     [SerializeField] private float stamina;
     [SerializeField] private float staminaCooldown;
-    [SerializeField] private int redScore;
-    [SerializeField] private int blueScore;
-    
+
     [SerializeField] private GameObject ball;
     [SerializeField] private GameObject gameManager;
 
-    //[SerializeField] private Image staminaLevel;
     private bool canHeal;
-    
-    private float ySpeed;
-    private float timeSinceSprint;
-
-    private CharacterController characterController;
+    private bool isGrounded;
+    private Rigidbody rb;
     private Animator animator;
-
-    private bool canAdd = true;
+    private float horizontalInput;
+    private float verticalInput;
+    private float timeSinceSprint;
 
     private void Start()
     {
-        characterController = GetComponent<CharacterController>();
-        animator= GetComponent<Animator>();
-        ball = GameObject.FindGameObjectWithTag("Ball");
-        gameManager = GameObject.FindGameObjectWithTag("GameManager");
+        rb = GetComponent<Rigidbody>();
+        animator = GetComponent<Animator>();
     }
 
     private void Update()
     {
+        // Input handling
+        horizontalInput = -Input.GetAxis("Horizontal");
+        verticalInput = -Input.GetAxis("Vertical");
+        Vector3 movementDirection = new Vector3(horizontalInput, 0, verticalInput).normalized;
 
-        // if (!isLocalPlayer) return;
+        // Ground Check
+        isGrounded = Physics.Raycast(transform.position, Vector3.down, 0.1f);
 
-        float horizontalInput = Input.GetAxis("Horizontal");
-        float verticalInput = Input.GetAxis("Vertical");
+        // Rotation
+        Rotate(movementDirection);
 
-        Vector3 movementDirection = new Vector3(-horizontalInput, 0, -verticalInput);
-        float magnitude = Mathf.Clamp01(movementDirection.magnitude) * movementSpeed;
-        movementDirection.Normalize();
+        // Sprinting
+        Sprint();
 
-        ySpeed += Physics.gravity.y * Time.deltaTime * 3;
+        // Stamina management
+        RefillStamina();
 
-        if (characterController.isGrounded)
+        // Animation
+        Animation(movementDirection);
+
+        // Jump
+        if (isGrounded && Input.GetButtonDown("Jump"))
         {
-            ySpeed = -0.5f;
-
-            if (Input.GetButtonDown("Jump"))
-            {
-                ySpeed = jumpSpeed;
-            }
+            Jump();
         }
+    }
 
-        Vector3 velocity = movementDirection * magnitude;
-        velocity.y = ySpeed;
+    private void FixedUpdate()
+    {
+        // Movement
+        Move();
+    }
 
-        characterController.Move(velocity * Time.deltaTime);
+    private void Move()
+    {
+        if (isGrounded)
+        {
+            Vector3 moveDirection = new Vector3(horizontalInput, 0, verticalInput).normalized;
+            Vector3 moveVelocity = moveDirection * (Input.GetKey(KeyCode.LeftShift) && stamina > 0 ? sprintSpeed : movementSpeed);
 
+            rb.velocity = new Vector3(moveVelocity.x, rb.velocity.y, moveVelocity.z);
+        }
+    }
+
+    private void Jump()
+    {
+        rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+    }
+
+    private void Rotate(Vector3 movementDirection)
+    {
         if (movementDirection != Vector3.zero)
         {
             Quaternion toRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
-
             transform.rotation = Quaternion.RotateTowards(transform.rotation, toRotation, rotationSpeed * Time.deltaTime);
         }
-
-        Sprint();
-        Animation(movementDirection);
-        if (stamina <= 0)
-        {
-            movementSpeed = walkSpeed;
-        }
-        if (stamina > staminaMax)
-        {
-            stamina = staminaMax;
-        }
-        RefillStamina();
-
     }
 
     private void Sprint()
     {
-        if (Input.GetKey("left shift") && stamina > 0)
+        if (Input.GetKey(KeyCode.LeftShift) && stamina > 0)
         {
             timeSinceSprint = 0;
             canHeal = false;
@@ -102,11 +103,27 @@ public class PlayerMovement : MonoBehaviour
             movementSpeed = walkSpeed;
             timeSinceSprint += Time.deltaTime;
         }
-        if(timeSinceSprint >= staminaCooldown)
+
+        if (timeSinceSprint >= staminaCooldown)
         {
             canHeal = true;
         }
+
+        if (stamina <= 0)
+        {
+            movementSpeed = walkSpeed;
+        }
     }
+
+    private void RefillStamina()
+    {
+        if (canHeal && stamina < staminaMax)
+        {
+            stamina += Time.deltaTime * staminaCooldown;
+            stamina = Mathf.Clamp(stamina, 0, staminaMax);
+        }
+    }
+
     private void Animation(Vector3 mD)
     {
         if (mD == Vector3.zero)
@@ -122,31 +139,22 @@ public class PlayerMovement : MonoBehaviour
             animator.SetFloat("speed", 0.4f);
         }
     }
-    private void RefillStamina()
-    {
-        if(canHeal == true)
-        {
-            if(stamina < staminaMax)
-            {
-                //staminaLevel.fillAmount = Mathf.MoveTowards(staminaLevel.fillAmount, 1f, Time.deltaTime * 0.25f);
-                stamina = Mathf.MoveTowards(stamina / staminaMax, 1f, Time.deltaTime * 0.25f) * staminaMax;
-            }
-        }
-    }
+
     private void OnTriggerEnter(Collider other)
     {
-        if(other.CompareTag("RedTrigger") && GetComponent<CatchBall>().isCatched == true && gameObject.tag == "BluePlayer")
+        // Handle score triggering logic here if needed.
+        if (other.CompareTag("RedTrigger") && GetComponent<CatchBall>().isCatched == true && gameObject.tag == "BluePlayer")
         {
-            if(canAdd)
+            if (canAdd)
             {
                 gameManager.GetComponent<GoalSystem>().BlueScore += 5;
                 canAdd = false;
                 StartCoroutine(DoAddPoints());
             }
         }
-        else if(other.CompareTag("BlueTrigger") && GetComponent<CatchBall>().isCatched == true && gameObject.tag == "RedPlayer")
+        else if (other.CompareTag("BlueTrigger") && GetComponent<CatchBall>().isCatched == true && gameObject.tag == "RedPlayer")
         {
-            if(canAdd)
+            if (canAdd)
             {
                 gameManager.GetComponent<GoalSystem>().RedScore += 5;
                 canAdd = false;
@@ -154,12 +162,12 @@ public class PlayerMovement : MonoBehaviour
             }
         }
     }
+
+    private bool canAdd = true;
+
     IEnumerator DoAddPoints()
     {
         yield return new WaitForSeconds(2f);
         canAdd = true;
     }
-
-
-
 }
