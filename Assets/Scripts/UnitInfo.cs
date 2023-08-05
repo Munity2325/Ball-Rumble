@@ -8,16 +8,13 @@ public class UnitInfo {
     public int id;
     public string tag;
     public Vector3 position;
-    public UnitColliderSize size;
-    //public Vector3 size;    // TODO: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ capsule collider radius & height
+    //public Vector3 size;    // TODO: добавить размеры объектов
 
     public UnitInfo(GameObject unit) {
         id = unit.GetInstanceID();
         unit.name = id.ToString();
         tag = unit.tag;
         position = unit.transform.position;
-        size.height = unit.GetComponent<CapsuleCollider>().height;
-        size.radius = unit.GetComponent<CapsuleCollider>().radius;
     }
 
     public void refresh() {
@@ -30,11 +27,4 @@ public class UnitInfo {
 [Serializable]
 public class UnitInfoCollection {
     public UnitInfo[] data;
-}
-
-[Serializable]
-public class UnitColliderSize
-{
-    public float height;
-    public float radius;
 }
