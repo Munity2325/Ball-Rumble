@@ -9,7 +9,7 @@ public class TournamentController : MonoBehaviour {
     [SerializeField] private uint updatesPerRequest = 3;
     private uint updatesCount = 0;
     private TournamentPlayer[] teams = null;
-    private UnitInfoCollection objectsInfo = new();
+    private UnitInfoCollection objectsInfo = null;
 
     void Awake() {
         teams = new TournamentPlayer[totalTeams];
@@ -24,22 +24,15 @@ public class TournamentController : MonoBehaviour {
         updatesCount++;
         if (updatesCount % updatesPerRequest != 0) return;
         updatesCount = 0;
-        refreshObjectsInfo();
+        objectsInfo.refresh();
         foreach(TournamentPlayer player in teams) {
             player.requestActions(objectsInfo);
         }
     }
 
-    private void refreshObjectsInfo() {
-        foreach(UnitInfo unit in objectsInfo.data) {
-            unit.refresh();
-        }
-    }
-
     private void createObjectsInfo() {
-        // ƒлина массива objectsInfo: количество юнитов в каждой команде + м€ч + 4 штанги ворот
-        objectsInfo.data = new UnitInfo[totalTeams * unitsInTeam + 1 + 4];
-        Debug.Log(objectsInfo.data.Length);
+        // –азмер objectsInfo: количество юнитов в каждой команде + м€ч + 4 штанги ворот
+        objectsInfo = new(totalTeams * unitsInTeam + 1 + 4);
         // ƒобавл€ем м€ч
         objectsInfo.data[0] = new UnitInfo(GameObject.FindWithTag("Ball"));
         uint i = 1;
