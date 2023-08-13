@@ -316,6 +316,9 @@ MonoBehaviour:
   kickForce: 2000
   kickAngle: 30
   isRed: 1
+  playerPositions:
+  - {fileID: 6866615471027140032}
+  - {fileID: 0}
   isCatched: 0
   activePlayer: {fileID: 0}
 --- !u!114 &4007213552440737205

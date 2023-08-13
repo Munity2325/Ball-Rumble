@@ -15,6 +15,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private GameObject ball;
     [SerializeField] private GameObject gameManager;
 
+    [SerializeField] private int throwAngleRange;
+    [SerializeField] private int kickAngleRange;
+
     private bool canHeal;
     private bool isGrounded;
     private Rigidbody rb;
@@ -22,6 +25,8 @@ public class PlayerMovement : MonoBehaviour
     private float horizontalInput;
     private float verticalInput;
     private float timeSinceSprint;
+    
+    public bool canMove = true;
 
     private void Start()
     {
@@ -31,37 +36,43 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        // Input handling
-        horizontalInput = -Input.GetAxis("Horizontal");
-        verticalInput = -Input.GetAxis("Vertical");
-        Vector3 movementDirection = new Vector3(horizontalInput, 0, verticalInput).normalized;
-
-        // Ground Check
-        isGrounded = Physics.Raycast(transform.position, Vector3.down, 0.1f);
-
-        // Rotation
-        Rotate(movementDirection);
-
-        // Sprinting
-        Sprint();
-
-        // Stamina management
-        RefillStamina();
-
-        // Animation
-        Animation(movementDirection);
-
-        // Jump
-        if (isGrounded && Input.GetButtonDown("Jump"))
+        if(canMove)
         {
-            Jump();
+            // Input handling
+            horizontalInput = -Input.GetAxis("Horizontal");
+            verticalInput = -Input.GetAxis("Vertical");
+            Vector3 movementDirection = new Vector3(horizontalInput, 0, verticalInput).normalized;
+
+            // Ground Check
+            isGrounded = Physics.Raycast(transform.position, Vector3.down, 0.1f);
+
+            // Rotation
+            Rotate(movementDirection);
+
+            // Sprinting
+            Sprint();
+
+            // Stamina management
+            RefillStamina();
+
+            // Animation
+            Animation(movementDirection);
+
+            // Jump
+            if (isGrounded && Input.GetButtonDown("Jump"))
+            {
+                Jump();
+            }
         }
     }
 
     private void FixedUpdate()
     {
-        // Movement
-        Move();
+        if(canMove)
+        {
+            // Movement
+            Move();
+        }
     }
 
     private void Move()
@@ -123,6 +134,16 @@ public class PlayerMovement : MonoBehaviour
             stamina = Mathf.Clamp(stamina, 0, staminaMax);
         }
     }
+    public int ThrowAngleRange()
+    {
+        throwAngleRange = Mathf.RoundToInt(Random.Range(0, (staminaMax - stamina) * 5));
+        return (Random.Range(0, 1) == 0) ? -throwAngleRange : throwAngleRange;
+    }
+    public int KickAngleRange()
+    {
+        kickAngleRange = Mathf.RoundToInt(Random.Range(0, (staminaMax - stamina) * 10) + 10);
+        return (Random.Range(0, 1) == 0) ? -kickAngleRange : kickAngleRange;
+    }
 
     private void Animation(Vector3 mD)
     {
@@ -161,6 +182,13 @@ public class PlayerMovement : MonoBehaviour
                 StartCoroutine(DoAddPoints());
             }
         }
+    }
+
+    public IEnumerator DoMoveFalse(float seconds)
+    {
+        canMove = false;
+        yield return new WaitForSeconds(seconds);
+        canMove = true;
     }
 
     private bool canAdd = true;

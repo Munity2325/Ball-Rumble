@@ -7,9 +7,13 @@ public class CatchBall : MonoBehaviour
     [SerializeField] private GameObject ball;
     [SerializeField] private float throwForce;
     [SerializeField] private float throwAngle;
+    [SerializeField] private float defaultThrowAngle;
     [SerializeField] private float kickForce;
     [SerializeField] private float kickAngle;
+    [SerializeField] private float defaultKickAngle;
     [SerializeField] private bool isRed;
+
+    [SerializeField] private GameObject[] playerPositions;
     public bool isCatched = false;
 
     //[SyncVar(hook = nameof(OnIsCatchedChanged))] public bool isCatched = false;
@@ -23,6 +27,9 @@ public class CatchBall : MonoBehaviour
         ball = GameObject.FindGameObjectWithTag("Ball");
         animator= GetComponent<Animator>();
         ballRigidbody = ball.GetComponent<Rigidbody>();
+
+        defaultThrowAngle = throwAngle;
+        defaultKickAngle = kickAngle;
     }
 
     private void Update()
@@ -64,12 +71,64 @@ public class CatchBall : MonoBehaviour
         {
             ThrowBall();
         }
-        else if (Input.GetKeyDown(KeyCode.Q) && isCatched)
+        else if (Input.GetKeyDown(KeyCode.Q) && isCatched && isRed)
         {
-            KickBall();
+            GetPlayerPositions("RedPlayer");
+            // Находим самую маленькую позицию по X среди игроков
+            float minX = Mathf.Infinity;
+
+            foreach (GameObject playerPos in playerPositions)
+            {
+                if (playerPos.transform.position.x < minX)
+                {
+                    minX = playerPos.transform.position.x;
+                }
+            }
+
+            // Проверяем, является ли текущий игрок самым "впереди стоящим" по X
+            if (transform.position.x <= minX)
+            {
+                // Разрешаем удар, так как игрок впереди от других
+                KickBall();
+            }
+            else
+            {
+                // Запрещаем удар, так как перед ним есть игроки
+                Debug.Log("Впереди другие игроки, ударять нельзя");
+            }
+        }
+        else if (Input.GetKeyDown(KeyCode.Q) && isCatched && !isRed)
+        {
+            GetPlayerPositions("BluePlayer");
+            // Находим самую маленькую позицию по X среди игроков
+            float maxX = Mathf.NegativeInfinity;
+
+            foreach (GameObject playerPos in playerPositions)
+            {
+                if (playerPos.transform.position.x > maxX)
+                {
+                    maxX = playerPos.transform.position.x;
+                }
+            }
+
+            // Выполняем проверку позиции текущего игрока и разрешаем или запрещаем удар
+            if (transform.position.x >= maxX)
+            {
+                // Разрешаем удар, так как игрок впереди от других
+                KickBall();
+            }
+            else
+            {
+                // Запрещаем удар, так как перед ним есть игроки
+                Debug.Log("Впереди другие игроки, ударять нельзя");
+            }
         }
     }
 
+    private void GetPlayerPositions(string playerTag)
+    {
+        playerPositions = GameObject.FindGameObjectsWithTag(playerTag);
+    }
     private void OnTriggerEnter(Collider other)
     {
 
@@ -83,19 +142,23 @@ public class CatchBall : MonoBehaviour
     {
         isCatched = false;
         
-
+        throwAngle += gameObject.GetComponent<PlayerMovement>().ThrowAngleRange();
+        Debug.Log(throwAngle);
         // Применение фиксированной силы и угла броска к мячу
         Vector3 throwDirection = Quaternion.Euler(-throwAngle, transform.eulerAngles.y, 0f) * Vector3.forward;
         ballRigidbody.AddForce(throwDirection * throwForce);
+        throwAngle = defaultThrowAngle;
     }
     private void KickBall()
     {
         isCatched = false;
         
-
+        kickAngle += gameObject.GetComponent<PlayerMovement>().KickAngleRange();
+        Debug.Log(kickAngle);
         // Применение фиксированной силы и угла броска к мячу
-        Vector3 throwDirection = Quaternion.Euler(-kickAngle, transform.eulerAngles.y, 0f) * Vector3.forward;
-        ballRigidbody.AddForce(throwDirection * kickForce);
+        Vector3 kickDirection = Quaternion.Euler(-kickAngle, transform.eulerAngles.y, 0f) * Vector3.forward;
+        ballRigidbody.AddForce(kickDirection * kickForce);
+        kickAngle = defaultKickAngle;
     }
 
 
@@ -132,17 +195,20 @@ public class CatchBall : MonoBehaviour
     // }
     private void OnCollisionEnter(Collision col)
     {
-        if (col.gameObject.tag == "BluePlayer" && gameObject.tag == "RedPlayer")
+        if (col.gameObject.tag == "BluePlayer" && gameObject.tag == "RedPlayer" && isCatched)
         {
             animator.Play("Knocked");
             isCatched = false;
             ball.GetComponent<Rigidbody>().AddForce(new Vector3(0f, 5f, 0f), ForceMode.Force);
+            StartCoroutine(gameObject.GetComponent<PlayerMovement>().DoMoveFalse(2.5f));
         }
-        if (col.gameObject.tag == "RedPlayer" && gameObject.tag == "BluePlayer")
+        if (col.gameObject.tag == "RedPlayer" && gameObject.tag == "BluePlayer" && isCatched)
         {
             animator.Play("Knocked");
             isCatched = false;
             ball.GetComponent<Rigidbody>().AddForce(new Vector3(0f, 5f, 0f), ForceMode.Force);
+            StartCoroutine(gameObject.GetComponent<PlayerMovement>().DoMoveFalse(2.5f));
         }
     }
+    
 }

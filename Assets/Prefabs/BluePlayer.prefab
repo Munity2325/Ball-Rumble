@@ -96,7 +96,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 674a565fe4d34f04f808c52bc94cafe9, type: 3}
       propertyPath: m_RootOrder
-      value: 0
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 674a565fe4d34f04f808c52bc94cafe9, type: 3}
       propertyPath: m_LocalScale.x
@@ -321,6 +321,7 @@ MonoBehaviour:
   kickForce: 2000
   kickAngle: 30
   isRed: 0
+  playerPositions: []
   isCatched: 0
   activePlayer: {fileID: 0}
 --- !u!114 &6686692527420141452

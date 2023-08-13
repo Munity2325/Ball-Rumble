@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class TournamentController : MonoBehaviour {
     [SerializeField] private uint totalTeams = 2;
-    [SerializeField] private uint unitsInTeam = 1; // 6 в финальной версии
+    [SerializeField] private uint unitsInTeam = 1; // 6 пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
     [SerializeField] private uint updatesPerRequest = 3;
     private uint updatesCount = 0;
     private TournamentPlayer[] teams = null;
@@ -37,19 +37,19 @@ public class TournamentController : MonoBehaviour {
     }
 
     private void createObjectsInfo() {
-        // Длина массива objectsInfo: количество юнитов в каждой команде + мяч + 4 штанги ворот
+        // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ objectsInfo: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ + пїЅпїЅпїЅ + 4 пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
         objectsInfo.data = new UnitInfo[totalTeams * unitsInTeam + 1 + 4];
         Debug.Log(objectsInfo.data.Length);
-        // Добавляем мяч
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ
         objectsInfo.data[0] = new UnitInfo(GameObject.FindWithTag("Ball"));
         uint i = 1;
-        // Добавляем штанги
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
         GameObject[] objects = GameObject.FindGameObjectsWithTag("GoalPost");
         foreach (GameObject obj in objects) {
             objectsInfo.data[i] = new UnitInfo(obj);
             i++;
         }
-        // Добавляем юниты команд
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
         for (uint t=0; t<totalTeams; t++) {
             objects = GameObject.FindGameObjectsWithTag(teams[t].playerName());
             foreach(GameObject obj in objects) {
