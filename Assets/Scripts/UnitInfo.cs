@@ -23,6 +23,8 @@ public class UnitInfo {
     public void refresh() {
         GameObject obj = GameObject.Find(id.ToString());
         position = obj.transform.position;
+        // size.height = unit.GetComponent<CapsuleCollider>().height;
+        // size.radius = unit.GetComponent<CapsuleCollider>().radius;
     }
 }
 

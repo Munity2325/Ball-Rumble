@@ -4218,6 +4218,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BluePlayer
       objectReference: {fileID: 0}
+    - target: {fileID: 7617504274018616160, guid: d54f432bb4ec986479e2ac8af7c0db38, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8111220291234382272, guid: d54f432bb4ec986479e2ac8af7c0db38, type: 3}
       propertyPath: ball
       value: 
